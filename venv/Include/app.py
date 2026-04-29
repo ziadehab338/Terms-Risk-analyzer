@@ -1,5 +1,6 @@
 from analyzer import analyze_input
 
+
 text = input("Enter Terms & Conditions text:\n")
 results = analyze_input(text)
 
@@ -12,5 +13,4 @@ if results:
         print(f"Explanation: {result['explanation']}")
         print(f"Matched Keyword: {result['matched_keyword']}")
         print("-" * 50)
-else:
-       print("\nNo risks detected.")
+

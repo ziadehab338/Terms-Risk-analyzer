@@ -1,0 +1,25 @@
+# Ignore everything inside venv
+venv/*
+
+# Keep Include folder
+!venv/Include/
+venv/Include/*
+
+# Re-include project files only
+!venv/Include/*.py
+!venv/Include/*.md
+!venv/Include/*.txt
+!venv/Include/*.csv
+!venv/Include/.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor / env
+.vscode/
+.env
+.DS_Store
+Thumbs.db
