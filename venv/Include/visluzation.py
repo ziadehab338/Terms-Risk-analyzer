@@ -3,14 +3,14 @@ import pandas as pd
 import shap
 import streamlit as st
 import plotly.express as px
-
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-
 from rules import RISK_RULES
+from PIL import Image
+from analyzer import extract_text_from_image
 
 
 # =========================
@@ -406,7 +406,25 @@ def analyze_user_input(user_text, vectorizer, log_model, rf_model, binary_encode
         )
 
     return results
+def analyze_image(uploaded_file, vectorizer, log_model, rf_model, binary_encoder, risk_encoder, binary_explainer, feature_names, top_k=5):
+    extracted_text = extract_text_from_image(uploaded_file)
 
+    if not extracted_text.strip():
+        return [], ""
+
+    results = analyze_user_input(
+        extracted_text,
+        vectorizer,
+        log_model,
+        rf_model,
+        binary_encoder,
+        risk_encoder,
+        binary_explainer,
+        feature_names,
+        top_k=top_k
+    )
+
+    return results, extracted_text                        
 
 def render_result(result):
     clean_sentence = clean_display_sentence(result["sentence"])
@@ -475,95 +493,329 @@ def render_result(result):
 # =========================
 # UI
 # =========================
-st.markdown('<div class="big-title">🔍 Terms & Privacy Risk Analyzer</div>', unsafe_allow_html=True)
-st.markdown('<div class="small-text">Hybrid AI system for clause-level risk detection, ranking, and explanation.</div>', unsafe_allow_html=True)
+# =========================
+# UI
+# =========================
 
-tab1, tab2 = st.tabs(["📂 Analyze Dataset Row", "✍️ Analyze Your Own Text"])
+# =========================
+# UI
+# =========================
 
-with tab1:
-    st.subheader("Dataset Clause Analysis")
+st.markdown("""
+<style>
+.hero {
+    min-height: 430px;
+    padding: 58px;
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at top left, rgba(244,63,94,0.28), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(37,99,235,0.35), transparent 32%),
+        linear-gradient(135deg, #111827 0%, #020617 55%, #0f172a 100%);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+    margin-bottom: 34px;
+}
 
-    col_a, col_b = st.columns([1, 1])
+.hero-badge {
+    display: inline-block;
+    background: rgba(59,130,246,0.16);
+    color: #bfdbfe;
+    border: 1px solid rgba(59,130,246,0.35);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+    margin-bottom: 22px;
+}
 
-    with col_a:
-        filter_mode = st.radio(
-            "Dataset filter",
-            ["All rows", "Risk rows only"],
-            horizontal=True
+.hero h1 {
+    font-size: 56px;
+    font-weight: 950;
+    margin-bottom: 18px;
+    line-height: 1.1;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #dbeafe;
+    max-width: 900px;
+    line-height: 1.8;
+}
+
+.hero-small {
+    color: #94a3b8;
+    font-size: 16px;
+    margin-top: 18px;
+}
+
+.feature-card {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.09);
+    padding: 24px;
+    border-radius: 22px;
+    min-height: 165px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.20);
+}
+
+.feature-card h4 {
+    margin-bottom: 12px;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.feature-card p {
+    color: #b6c5d8;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.analysis-panel {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 28px;
+    border-radius: 26px;
+    margin-top: 22px;
+}
+
+.mode-title {
+    font-size: 34px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.mode-subtitle {
+    color: #94a3b8;
+    font-size: 17px;
+    margin-bottom: 24px;
+}
+
+.option-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 18px;
+    border-radius: 18px;
+    margin-bottom: 18px;
+}
+
+.stButton > button {
+    border-radius: 16px;
+    padding: 0.75rem 1.4rem;
+    font-weight: 800;
+    font-size: 17px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+if "show_analyzer" not in st.session_state:
+    st.session_state.show_analyzer = False
+
+if "analysis_mode" not in st.session_state:
+    st.session_state.analysis_mode = "✍️ Analyze Text"
+
+
+# =========================
+# Landing Page
+# =========================
+if not st.session_state.show_analyzer:
+
+    st.markdown("""
+    <div class="hero">
+        <div class="hero-badge">Hybrid AI • Rule-Based + Machine Learning + OCR</div>
+        <h1>🔍 Terms & Privacy Risk Analyzer</h1>
+        <p>
+            Understand hidden risks inside Terms of Service and Privacy Policies.
+            Paste text directly or upload a screenshot, and the system will analyze it,
+            detect risky clauses, classify the risk type, rank the risk level, and explain
+            why the clause may not be safe.
+        </p>
+        <div class="hero-small">
+            Built for clause-level analysis, explainable results, and privacy-risk awareness.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.markdown("""
+        <div class="feature-card">
+            <h4>✍️ Paste or Type Text</h4>
+            <p>
+                Copy any Terms or Privacy clause and get an instant risk analysis with
+                probability, level, type, and explanation.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c2:
+        st.markdown("""
+        <div class="feature-card">
+            <h4>🖼️ Upload Screenshot</h4>
+            <p>
+                Upload a screenshot from an app or website. OCR extracts the text,
+                then the analyzer checks it for hidden risks.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c3:
+        st.markdown("""
+        <div class="feature-card">
+            <h4>🧠 Explainable Detection</h4>
+            <p>
+                The system combines rules, machine learning, and explanations to show
+                why a clause is risky.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.write("")
+
+    if st.button("🚀 Let’s Analyze Your Text", use_container_width=True):
+        st.session_state.show_analyzer = True
+        st.rerun()
+
+
+# =========================
+# Analyzer Page
+# =========================
+else:
+
+    st.markdown('<div class="analysis-panel">', unsafe_allow_html=True)
+
+    top_left, top_right = st.columns([6, 3])
+
+    with top_left:
+        st.markdown('<div class="mode-title">Start Your Analysis</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="mode-subtitle">Choose how you want to provide the content: write/paste text or upload a screenshot.</div>',
+            unsafe_allow_html=True
         )
 
-    if filter_mode == "Risk rows only":
-        filtered_df = df[df["binary_label"].astype(str).str.lower() == "risk"].reset_index(drop=True)
-    else:
-        filtered_df = df.reset_index(drop=True)
+    with top_right:
+        if st.button("⬅ Back", use_container_width=True):
+            st.session_state.show_analyzer = False
+            st.rerun()
 
-    with col_b:
-        row_index = st.number_input(
-            "Choose row index",
-            min_value=0,
-            max_value=len(filtered_df) - 1,
-            value=0,
-            step=1
+    st.session_state.analysis_mode = st.radio(
+        "Choose input method",
+        ["✍️ Analyze Text", "🖼️ Upload Screenshot"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+    st.markdown("---")
+
+    # =========================
+    # Option 1: Text Analysis
+    # =========================
+    if st.session_state.analysis_mode == "✍️ Analyze Text":
+
+        st.subheader("✍️ Analyze Text")
+
+        user_text = st.text_area(
+            "Write, paste, or copy Terms / Privacy text here",
+            height=240,
+            placeholder="Example: We may share your data with third-party partners. The app may access your location and contacts."
         )
 
-    input_datapoint = filtered_df.iloc[[row_index]][["text"]]
-
-    result = check_risk(
-        input_datapoint,
-        vectorizer,
-        log_model,
-        rf_model,
-        binary_encoder,
-        risk_encoder,
-        binary_explainer,
-        feature_names,
-        top_k=5
-    )
-
-    render_result(result)
-
-with tab2:
-    st.subheader("Analyze Your Own Text")
-
-    user_text = st.text_area(
-        "Paste Terms / Privacy text هنا",
-        height=220,
-        placeholder="Example: We may share your data with third-party partners. The app may access your location and contacts."
-    )
-
-    top_k = 5
-
-    if st.button("Analyze Text", use_container_width=False):
-        if not user_text.strip():
-            st.warning("من فضلك اكتب text الأول")
-        else:
-            results = analyze_user_input(
-                user_text,
-                vectorizer,
-                log_model,
-                rf_model,
-                binary_encoder,
-                risk_encoder,
-                binary_explainer,
-                feature_names,
-                top_k=top_k
-            )
-
-            total_sentences = len(results)
-            risky_sentences = sum(1 for r in results if not r["safe"])
-
-            c1, c2 = st.columns(2)
-            c1.metric("Total Clauses", total_sentences)
-            c2.metric("Risky Clauses", risky_sentences)
-
-            if risky_sentences == 0:
-                st.markdown('<div class="summary-safe">Overall Result: The input looks safe.</div>', unsafe_allow_html=True)
+        if st.button("Analyze Text", key="analyze_text_btn"):
+            if not user_text.strip():
+                st.warning("Please enter text first.")
             else:
-                st.markdown(
-                    f'<div class="summary-risk">Overall Result: {risky_sentences} risky clause(s) detected.</div>',
-                    unsafe_allow_html=True
+                results = analyze_user_input(
+                    user_text,
+                    vectorizer,
+                    log_model,
+                    rf_model,
+                    binary_encoder,
+                    risk_encoder,
+                    binary_explainer,
+                    feature_names,
+                    top_k=5
                 )
 
-            for i, result in enumerate(results, start=1):
-                with st.expander(f"Clause {i}", expanded=(i == 1)):
-                    render_result(result)
+                total_sentences = len(results)
+                risky_sentences = sum(1 for r in results if not r["safe"])
+
+                m1, m2 = st.columns(2)
+                m1.metric("Total Clauses", total_sentences)
+                m2.metric("Risky Clauses", risky_sentences)
+
+                if risky_sentences == 0:
+                    st.markdown(
+                        '<div class="summary-safe">Overall Result: The input looks safe.</div>',
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f'<div class="summary-risk">Overall Result: {risky_sentences} risky clause(s) detected.</div>',
+                        unsafe_allow_html=True
+                    )
+
+                for i, result in enumerate(results, start=1):
+                    with st.expander(f"Clause {i}", expanded=(i == 1)):
+                        render_result(result)
+
+
+    # =========================
+    # Option 2: Screenshot Analysis
+    # =========================
+    else:
+
+        st.subheader("🖼️ Analyze Screenshot")
+
+        uploaded_file = st.file_uploader(
+            "Upload Terms / Privacy screenshot",
+            type=["png", "jpg", "jpeg"]
+        )
+
+        if uploaded_file is not None:
+            st.image(uploaded_file, caption="Uploaded Screenshot", use_container_width=True)
+
+            if st.button("Analyze Screenshot", key="analyze_screenshot_btn"):
+                image_results, extracted_text = analyze_image(
+                    uploaded_file,
+                    vectorizer,
+                    log_model,
+                    rf_model,
+                    binary_encoder,
+                    risk_encoder,
+                    binary_explainer,
+                    feature_names,
+                    top_k=5
+                )
+
+                if not extracted_text.strip():
+                    st.warning("No readable text was found in the image.")
+                else:
+                    st.subheader("Extracted Text")
+                    st.text_area(
+                        "OCR Result",
+                        value=extracted_text,
+                        height=180
+                    )
+
+                    total_sentences = len(image_results)
+                    risky_sentences = sum(1 for r in image_results if not r["safe"])
+
+                    m1, m2 = st.columns(2)
+                    m1.metric("Total Clauses", total_sentences)
+                    m2.metric("Risky Clauses", risky_sentences)
+
+                    if risky_sentences == 0:
+                        st.markdown(
+                            '<div class="summary-safe">Overall Result: The screenshot looks safe.</div>',
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown(
+                            f'<div class="summary-risk">Overall Result: {risky_sentences} risky clause(s) detected.</div>',
+                            unsafe_allow_html=True
+                        )
+
+                    for i, result in enumerate(image_results, start=1):
+                        with st.expander(f"Screenshot Clause {i}", expanded=(i == 1)):
+                            render_result(result)
+
+    st.markdown('</div>', unsafe_allow_html=True)    

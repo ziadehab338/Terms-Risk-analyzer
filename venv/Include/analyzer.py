@@ -1,6 +1,9 @@
+
 from rules import RISK_RULES
 from utils import preprocess_text, split_into_sentences
-
+from PIL import Image
+import easyocr
+import numpy as np
 
 def analyze_sentence(sentence):
     results = []
@@ -43,3 +46,23 @@ def analyze_input(text):
         return analyze_sentence(sentences[0])
     else:
         return analyze_text(sentences)
+    _reader = None
+
+_reader = None
+
+def get_ocr_reader():
+    global _reader
+    if _reader is None:
+        _reader = easyocr.Reader(['en'], gpu=False)
+    return _reader
+
+
+def extract_text_from_image(uploaded_file):
+    image = Image.open(uploaded_file).convert("RGB")
+    image_np = np.array(image)
+
+    reader = get_ocr_reader()
+    ocr_results = reader.readtext(image_np, detail=0, paragraph=True)
+
+    extracted_text = " ".join(ocr_results).strip()
+    return extracted_text
