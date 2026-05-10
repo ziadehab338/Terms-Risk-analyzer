@@ -1,6 +1,10 @@
-click==8.1.8
-colorama==0.4.6
-joblib==1.5.3
-nltk==3.9.2
-regex==2026.1.15
-tqdm==4.67.3
+streamlit
+pandas
+numpy
+scikit-learn
+shap
+plotly
+pillow
+sentence-transformers
+pytesseract
+opencv-python-headless
