@@ -1,8 +1,8 @@
 # 🔍 Explainable AI for Terms & Privacy Risk Detection
 
-An advanced intelligent system designed to analyze Terms of Service and Privacy Policies, uncover hidden risks, and transform complex legal language into clear, interpretable, and actionable insights.
+An advanced intelligent system designed to analyze **Terms of Service** and **Privacy Policies**, uncover hidden risks, and transform complex legal language into clear, interpretable, and actionable insights.
 
-This project addresses a critical real-world problem by combining **rule-based reasoning** with **machine learning models** to deliver both transparency and predictive power.
+This project addresses a critical real-world problem by combining rule-based reasoning with machine learning models to deliver both transparency and predictive power.
 
 ---
 
@@ -12,12 +12,12 @@ Modern digital platforms rely heavily on long, complex legal agreements that use
 
 These documents are intentionally dense and difficult to interpret, which often leads to users unknowingly accepting risky conditions such as:
 
-- Unauthorized data sharing with third parties  
-- Hidden subscription and automatic payment mechanisms  
-- Extensive tracking and privacy violations  
-- Legal clauses limiting user rights and protections  
+- Unauthorized data sharing with third parties
+- Hidden subscription and automatic payment mechanisms
+- Extensive tracking and privacy violations
+- Legal clauses limiting user rights and protections
 
-As a result, there is a significant gap between **user awareness** and **actual risk exposure**.
+As a result, there is a significant gap between user awareness and actual risk exposure.
 
 ---
 
@@ -27,16 +27,16 @@ This project introduces an **Explainable Risk Detection System** that analyzes l
 
 Instead of simply detecting risk, the system focuses on:
 
-- Understanding *why* a clause is risky  
-- Explaining it in plain, human-readable language  
-- Providing structured and interpretable outputs  
+- Understanding why a clause is risky
+- Explaining it in plain, human-readable language
+- Providing structured and interpretable outputs
 
 The system transforms unstructured legal text into:
 
-- Risk classifications  
-- Risk scores  
-- Clear explanations  
-- Actionable recommendations  
+- Risk classifications
+- Risk scores
+- Clear explanations
+- Actionable recommendations
 
 ---
 
@@ -45,127 +45,72 @@ The system transforms unstructured legal text into:
 The system follows a **hybrid AI architecture**, combining deterministic logic with data-driven learning.
 
 ### 1️⃣ Rule-Based Risk Engine
-- Built on a predefined **risk ontology**  
-- Detects dangerous clauses using keyword matching and pattern recognition  
-- Provides **fully transparent and explainable decisions**  
-- Serves as a baseline for comparison  
 
----
+- Built on a predefined risk ontology
+- Detects dangerous clauses using keyword matching and pattern recognition
+- Provides fully transparent and explainable decisions
+- Serves as a baseline for comparison
 
 ### 2️⃣ Machine Learning Models
 
-#### 🔹 Binary Classification Model
-- Predicts whether a clause is risky or not  
-- Designed using interpretable models such as Logistic Regression  
+- **Binary Classification Model**: Predicts whether a clause is risky or not (using interpretable models like Logistic Regression).
+- **Multi-Class Classification Model**: Classifies the type of risk, including:
+  - Data Sharing
+  - Privacy & Tracking
+  - Payments & Subscriptions
+  - Permissions Access
+  - Legal Liability
 
-#### 🔹 Multi-Class Classification Model
-- Classifies the **type of risk**:
-  - Data Sharing  
-  - Privacy & Tracking  
-  - Payments & Subscriptions  
-  - Permissions Access  
-  - Legal Liability  
+### 3️⃣ Comparative Intelligence Layer & Semantic AI
 
-- Captures **semantic patterns beyond keywords**
-
----
-
-### 3️⃣ Comparative Intelligence Layer
-- Compares rule-based vs ML outputs  
+- Compares rule-based vs ML outputs
+- Integrates **Semantic AI** to understand the meaning and context of clauses, capturing deeper insights beyond keyword matching.
 - Highlights differences in:
-  - Accuracy  
-  - Coverage  
-  - Interpretability  
-
-This allows deeper understanding of **trade-offs between explainability and predictive performance**.
-
----
+  - Accuracy
+  - Coverage
+  - Interpretability
+  - **Meaningful Interpretation**: Using semantic analysis to interpret complex legal clauses.
+  
+This hybrid approach allows a deeper understanding of trade-offs between explainability, predictive performance, and the meaning behind legal texts.Captures semantic patterns beyond keywords.
 
 ## ⚙️ Core Features
 
-- 🔎 Clause-level text analysis  
-- ⚠️ Risk level classification (High / Medium / Low)  
-- 🧾 Multi-category risk detection  
-- 💬 Explainable outputs (not black-box predictions)  
-- 📊 Risk scoring mechanism  
-- 🔁 Hybrid detection (Rule-based + ML)  
-- 🧠 Semantic understanding of legal text  
-
----
-
-## 📊 Model Performance
-
-The system includes both rule-based and machine learning approaches for risk detection.
-
-Performance evaluation focuses on:
-- Classification accuracy  
-- Risk type prediction  
-- Clause-level consistency  
-
----
-
-## 📌 Example
-
-**Input:**  
-We may share your data with third-party partners.
-
-**Output:**  
-- Risk Level: High  
-- Risk Type: Data Sharing  
-- Explanation: This clause allows user data to be shared with external entities.  
+- 🔎 Clause-level text analysis
+- ⚠️ Risk level classification (High / Medium / Low)
+- 🧾 Multi-category risk detection
+- 💬 Explainable outputs (not black-box predictions)
+- 📊 Risk scoring mechanism
+- 🔁 Hybrid detection (Rule-based + ML)
+- 🧠 Semantic understanding of legal text
+- 🖼️ **Image Upload and Analysis**: Allows users to upload images for OCR-based text extraction and analysis.
+- 📝 **Text Upload**: Users can directly input text for risk assessment and analysis.
+- 🖥️ **Interactive User Interface**: A user-friendly interface for easy interaction, including text and image input for seamless risk detection.
 
 ---
 
 ## 🛠️ Technologies Used
 
-- Python  
-- Natural Language Processing (NLP)  
-- scikit-learn  
-- Rule-based systems  
-- Streamlit (Interactive Interface)  
-- (Planned) Transformer-based models (BERT, LLMs)  
+- **Python**
+- **Natural Language Processing (NLP)**
+- **scikit-learn**
+- **Rule-based systems**
+- **Streamlit (Interactive Interface)**
+- (Planned) **Transformer-based models (BERT, LLMs)**
 
 ---
 
 ## 📂 Project Structure
 terms-risk-detector/
-├── app.py              # Streamlit application interface
-├── rules.py            # Risk ontology and detection rules
-├── analyzer.py         # Core analysis engine
-├── utils.py            # Text preprocessing & segmenting
-├── models/             # Saved ML models & weights
-├── requirements.txt    # Project dependencies
-└── README.md           # Documentation
----
-
-## 🧠 Key Innovation
-
-- Hybrid Explainable AI system (Logic + ML)  
-- Focus on **interpretability, not just accuracy**  
-- Clause-level legal understanding  
-- Real-world problem-driven design  
-- Converts legal complexity into user-friendly insights  
+├── app.py                  # Streamlit application interface
+├── rules.py                # Risk ontology and detection rules
+├── analyzer.py             # Core analysis engine
+├── semantic_ai.py          # Semantic AI for clause detection
+├── utils.py                # Text preprocessing & segmenting
+├── models/                 # Saved ML models
+├── requirements.txt        # Project dependencies
+└── README.md               # Documentation
 
 ---
+## 🌐 Live Demo
 
-## 🚀 Future Improvements
-
-- PDF document parsing and analysis  
-- OCR support for screenshots and images  
-- Transformer-based NLP models (BERT, LLMs)  
-- Advanced explainability tools (SHAP, LIME)  
-- Full web deployment with enhanced UI  
-
----
-
-## 🎯 Impact
-
-This system bridges the gap between complex legal language and everyday users by making hidden risks:
-
-- **Visible**  
-- **Understandable**  
-- **Actionable**  
-
-It empowers users to make informed decisions instead of blindly accepting terms.
-
----
+You can access the live demo here: [Streamlit Demo](https://terms-risk-analyzer-dlfqvbrwk87qly7wgf9tkd.streamlit.app)
